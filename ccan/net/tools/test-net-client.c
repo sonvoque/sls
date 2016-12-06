@@ -6,97 +6,130 @@
 #include <netdb.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
+#include <string.h>
+
 
 #define MAXBUF 100
-static    int s_sock;
-static   int s_status;
-static struct sockaddr_in6 s_sin6;
-static   int s_sin6len;
-static   char s_buffer[MAXBUF];
+#define MAX_LENGTH 1024
+#define DELIMS " \t\r\n"
 
+// static    int s_sock;
+static  int     rev_bytes;
+static  struct  sockaddr_in6 rev_sin6;
+static  int     rev_sin6len;
+static  char    rev_buffer[MAXBUF];
+static  int     port;
+static  char    dst_ipv6addr[50];
+static  char    str_port[5];
+static  char    cmd[20];
+static  char    arg[20];
 
 int main(int argc, char* argv[])
 {
-   int sock, port;
-   int status;
-   struct addrinfo sainfo, *psinfo;
-   struct sockaddr_in6 sin6;
-   int sin6len;
-   char buffer[MAXBUF], arg[MAXBUF];
+  int sock;
+  int status;
+  struct addrinfo sainfo, *psinfo;
+  struct sockaddr_in6 sin6;
+  int sin6len;
+  char buffer[MAXBUF];
 
-   sin6len = sizeof(struct sockaddr_in6);
+  sin6len = sizeof(struct sockaddr_in6);
 
-   sprintf(buffer,"led_off");
-	 port = 3000;	//default
+  sprintf(buffer,"led_off");
+	port = 3000;
+  sprintf(dst_ipv6addr,"aaaa::212:7401:1:101");
 	
-   if(argc < 2) {
-     printf("Specify a port number\n"), exit(1);
-		}
-	 else if (argc==3) {
-			port = atoi(argv[1]);
-   		sprintf(buffer,argv[2]);
-	}		
+  if(argc < 4) {
+    printf("Specify an IPv6 addr or port number or Cmd \n"), exit(1);
+	}
 	else if (argc==4) {
-			port = atoi(argv[1]);
-		  //sprintf(buffer,argv[2]);
-   		sprintf(buffer,"%s %s",argv[2],argv[3] );
+    sprintf(dst_ipv6addr,argv[1]);      
+    strcpy(str_port,argv[2]);
+    strcpy(cmd,argv[3]);  
+    port = atoi(str_port);
+    sprintf(buffer,cmd);
+	}		
+	else if (argc==5) {
+    sprintf(dst_ipv6addr,argv[1]);      
+    strcpy(str_port,argv[2]);
+    sprintf(cmd,argv[3]);
+    sprintf(arg,argv[4]);
+		//sprintf(buffer,argv[2]);
+    port = atoi(str_port);
+   	sprintf(buffer,"%s %s",cmd,arg);
 	}	
 
+  strtok(buffer, "\n");
 
-   sock = socket(PF_INET6, SOCK_DGRAM,0);
+  sock = socket(PF_INET6, SOCK_DGRAM,0);
 
-   memset(&sin6, 0, sizeof(struct sockaddr_in6));
-   sin6.sin6_port = htons(port);
-   sin6.sin6_family = AF_INET6;
-   sin6.sin6_addr = in6addr_any;
+  memset(&sin6, 0, sizeof(struct sockaddr_in6));
+  sin6.sin6_port = htons(port);
+  sin6.sin6_family = AF_INET6;
+  sin6.sin6_addr = in6addr_any;
 
-   status = bind(sock, (struct sockaddr *)&sin6, sin6len);
+  status = bind(sock, (struct sockaddr *)&sin6, sin6len);
 
-   if(-1 == status)
-     perror("bind"), exit(1);
+  if(-1 == status)
+    perror("bind"), exit(1);
 
-   memset(&sainfo, 0, sizeof(struct addrinfo));
-   memset(&sin6, 0, sin6len);
+  memset(&sainfo, 0, sizeof(struct addrinfo));
+  memset(&sin6, 0, sin6len);
 
-   sainfo.ai_flags = 0;
-   sainfo.ai_family = PF_INET6;
-   sainfo.ai_socktype = SOCK_DGRAM;
-   sainfo.ai_protocol = IPPROTO_UDP;
-   status = getaddrinfo("aaaa::212:7402:2:202", argv[1], &sainfo, &psinfo);
+  sainfo.ai_flags = 0;
+  sainfo.ai_family = PF_INET6;
+  sainfo.ai_socktype = SOCK_DGRAM;
+  sainfo.ai_protocol = IPPROTO_UDP;
+  status = getaddrinfo(dst_ipv6addr, str_port, &sainfo, &psinfo);
 
-   switch (status) 
-     {
-      case EAI_FAMILY: printf("family\n");
-        break;
-      case EAI_SOCKTYPE: printf("stype\n");
-        break;
-      case EAI_BADFLAGS: printf("flag\n");
-        break;
-      case EAI_NONAME: printf("noname\n");
-        break;
-      case EAI_SERVICE: printf("service\n");
-        break;
-     }
-
-   status = sendto(sock, buffer, strlen(buffer), 0,
+  status = sendto(sock, buffer, strlen(buffer), 0,
                      (struct sockaddr *)psinfo->ai_addr, sin6len);
-   printf("buffer : %s \t%d\n", buffer, status);
+  printf("send cmd to [%s] : %s, cmd = %s (len=%d)\n", dst_ipv6addr,str_port, buffer, status);
 
-	 s_status = recvfrom(sock, s_buffer,MAXBUF, 0,
-                    (struct sockaddr *)&s_sin6, &s_sin6len);
+	rev_bytes = recvfrom(sock, rev_buffer,MAXBUF, 0,(struct sockaddr *)&rev_sin6, &rev_sin6len);
 
-
-	if (s_status<0) {
+	if (rev_bytes<0) {
     perror("Problem in recvfrom \n");
     exit(1);
   }
 
-  printf("Got back %d bytes: %s \n",s_status, s_buffer);		
-   shutdown(sock, 2);
-   close(sock); 
+  printf("Got back %d bytes: %s \n",rev_bytes, rev_buffer);		
+  shutdown(sock, 2);
+  close(sock); 
 
    // free memory
-   freeaddrinfo(psinfo);
-   psinfo = NULL;
-   return 0;
+  freeaddrinfo(psinfo);
+  psinfo = NULL;
+  return 0;
 }
+
+/*
+int main(int argc, char *argv[]) {
+  char *cmd;
+  char line[MAX_LENGTH];
+
+  while (1) {
+    printf("$ ");
+    if (!fgets(line, MAX_LENGTH, stdin)) break;
+
+    // Parse and execute command
+    if ((cmd = strtok(line, DELIMS))) {
+      // Clear errors
+      errno = 0;
+
+      if (strcmp(cmd, "led_on") == 0) {
+        char *arg = strtok(0, DELIMS);  
+      } else if (strcmp(cmd, "led_off") == 0)   {
+
+      } else if (strcmp(cmd, "exit") == 0) {
+        break;
+
+      } else system(line);
+
+      if (errno) perror("Command failed");
+    }
+  }
+
+  return 0;
+}
+*/
