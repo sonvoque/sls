@@ -1,3 +1,8 @@
+/*
+Shell cmd for controlling the SLS
+author Vo Que Son <sonvq@hcmut.edu.vn>
+*/
+ 
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -8,10 +13,11 @@
 #include <arpa/inet.h>
 #include <string.h>
 
+#include "/home/user/contiki/examples/cc2538dk/00_sls/sls.h"
 
 #define MAXBUF 100
-#define MAX_LENGTH 1024
-#define DELIMS " \t\r\n"
+// #define MAX_LENGTH 1024
+// #define DELIMS " \t\r\n"
 
 // static    int s_sock;
 static  int     rev_bytes;
@@ -23,6 +29,43 @@ static  char    dst_ipv6addr[50];
 static  char    str_port[5];
 static  char    cmd[20];
 static  char    arg[20];
+
+static  cmd_struct_t  tx_cmd, rx_reply;
+static  cmd_struct_t *cmdPtr;
+static  char *p;
+
+
+/*prototype definition */
+static void print_cmd();
+static void prepare_cmd();
+
+
+/*------------------------------------------------*/
+void prepare_cmd() {
+  tx_cmd.sfd = 0x7E;
+  tx_cmd.len = 12;
+  tx_cmd.seq ++;
+  tx_cmd.type = MSG_TYPE_REQ;
+  tx_cmd.err_code = 0;  
+}
+
+
+/*------------------------------------------------*/
+void print_cmd(cmd_struct_t command) {
+  printf("SFD=0x%X; ",command.sfd);
+  printf("len=%d; ",command.len);
+  printf("seq=%d; ",command.seq);
+  printf("type=0x%X; ",command.type);
+  printf("cmd=0x%X; ",command.cmd);
+  printf("arg0=%d; ",command.arg[0]);
+  printf("arg1=%d; ",command.arg[1]);
+  printf("arg2=%d; ",command.arg[2]);
+  printf("arg3=%d; ",command.arg[3]);
+  printf("arg4=%d; ",command.arg[4]);
+  printf("err_code=0x%X\n",command.err_code);  
+}
+
+
 
 int main(int argc, char* argv[])
 {
@@ -48,6 +91,16 @@ int main(int argc, char* argv[])
     strcpy(cmd,argv[3]);  
     port = atoi(str_port);
     sprintf(buffer,cmd);
+    if (strcmp(cmd,SLS_LED_ON)==0)
+      tx_cmd.cmd = LED_ON;
+    else if (strcmp(cmd,SLS_LED_OFF)==0)
+      tx_cmd.cmd = LED_ON;    
+    else if (strcmp(cmd,SLS_GET_LED_STATUS)==0)
+      tx_cmd.cmd = GET_LED_STATUS;
+    else if (strcmp(cmd,SLS_GET_NW_STATUS)==0)
+      tx_cmd.cmd = GET_NW_STATUS;
+    else if (strcmp(cmd,SLS_GET_GW_STATUS)==0)
+      tx_cmd.cmd = GET_GW_STATUS;
 	}		
 	else if (argc==5) {
     sprintf(dst_ipv6addr,argv[1]);      
@@ -55,9 +108,17 @@ int main(int argc, char* argv[])
     sprintf(cmd,argv[3]);
     sprintf(arg,argv[4]);
 		//sprintf(buffer,argv[2]);
+
+    if (strcmp(cmd,SLS_LED_DIM)==0) {
+      tx_cmd.cmd = LED_DIM;    
+      tx_cmd.arg[0] = atoi(arg);
+    }
+
     port = atoi(str_port);
    	sprintf(buffer,"%s %s",cmd,arg);
 	}	
+  prepare_cmd();
+
 
   strtok(buffer, "\n");
 
@@ -82,18 +143,30 @@ int main(int argc, char* argv[])
   sainfo.ai_protocol = IPPROTO_UDP;
   status = getaddrinfo(dst_ipv6addr, str_port, &sainfo, &psinfo);
 
-  status = sendto(sock, buffer, strlen(buffer), 0,
+  //status = sendto(sock, buffer, strlen(buffer), 0,
+  //                   (struct sockaddr *)psinfo->ai_addr, sin6len);
+
+  status = sendto(sock, &tx_cmd, sizeof(tx_cmd), 0,
                      (struct sockaddr *)psinfo->ai_addr, sin6len);
-  printf("send cmd to [%s] : %s, cmd = %s (len=%d)\n", dst_ipv6addr,str_port, buffer, status);
+  printf("send cmd to [%s]:%s, len=%d\n", dst_ipv6addr,str_port, status);
+  print_cmd(tx_cmd);
 
-	rev_bytes = recvfrom(sock, rev_buffer,MAXBUF, 0,(struct sockaddr *)&rev_sin6, &rev_sin6len);
-
+  /*wait for a reply */
+	rev_bytes = recvfrom(sock, rev_buffer, MAXBUF, 0,(struct sockaddr *)&rev_sin6, &rev_sin6len);
 	if (rev_bytes<0) {
     perror("Problem in recvfrom \n");
     exit(1);
   }
+  else {
+    printf("Got back %d bytes:\n",rev_bytes);   
+    p = (char *) (&rev_buffer); 
+    cmdPtr = (cmd_struct_t *)p;
+    rx_reply = *cmdPtr;
+    print_cmd(rx_reply);      
+  }
 
-  printf("Got back %d bytes: %s \n",rev_bytes, rev_buffer);		
+
+
   shutdown(sock, 2);
   close(sock); 
 
@@ -103,33 +176,3 @@ int main(int argc, char* argv[])
   return 0;
 }
 
-/*
-int main(int argc, char *argv[]) {
-  char *cmd;
-  char line[MAX_LENGTH];
-
-  while (1) {
-    printf("$ ");
-    if (!fgets(line, MAX_LENGTH, stdin)) break;
-
-    // Parse and execute command
-    if ((cmd = strtok(line, DELIMS))) {
-      // Clear errors
-      errno = 0;
-
-      if (strcmp(cmd, "led_on") == 0) {
-        char *arg = strtok(0, DELIMS);  
-      } else if (strcmp(cmd, "led_off") == 0)   {
-
-      } else if (strcmp(cmd, "exit") == 0) {
-        break;
-
-      } else system(line);
-
-      if (errno) perror("Command failed");
-    }
-  }
-
-  return 0;
-}
-*/
