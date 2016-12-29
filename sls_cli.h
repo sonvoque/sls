@@ -37,6 +37,7 @@
 #define SLS_LED_ON				"led_on"
 #define SLS_LED_OFF				"led_off"
 #define SLS_LED_DIM				"led_dim"
+#define SLS_LED_REBOOT			"led_reboot"
 
 #define SLS_LED_TIMER_START		"timer_on"
 #define SLS_LED_TIMER_STOP		"timer_off" 

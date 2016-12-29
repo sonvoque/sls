@@ -53,6 +53,7 @@ void prepare_cmd() {
 
 /*------------------------------------------------*/
 void print_cmd(cmd_struct_t command) {
+  int i;
   printf("SFD=0x%X; ",command.sfd);
   printf("len=%d; ",command.len);
   printf("seq=%d; ",command.seq);
@@ -60,7 +61,7 @@ void print_cmd(cmd_struct_t command) {
   printf("cmd=0x%X; ",command.cmd);
   printf("err_code=0x%X; ",command.err_code); 
   printf("data=[");
-  for (int i=0;i<MAX_CMD_DATA_LEN;i++) 
+  for (i=0;i<MAX_CMD_DATA_LEN;i++) 
     printf("0x%02X,",command.arg[i]);
   printf("]\n");
 }  
@@ -123,6 +124,10 @@ int main(int argc, char* argv[])
       tx_cmd.cmd = CMD_GET_APP_KEY;    
       tx_cmd.type = MSG_TYPE_REQ;
     }
+    else if (strcmp(cmd,SLS_LED_REBOOT)==0) {
+      tx_cmd.cmd = CMD_LED_REBOOT;    
+      tx_cmd.type = MSG_TYPE_REQ;
+    }    
     else {
       printf("Unknown cmd \n");
       exit(1);
