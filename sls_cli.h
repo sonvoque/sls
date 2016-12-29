@@ -48,3 +48,4 @@
 
 #define SLS_SET_APP_KEY			"set_app_key"
 #define SLS_GET_APP_KEY			"get_app_key"
+#define SLS_APP_KEY_128 		"CAFEBEAFDEADFEEE0123456789ABCDEF"

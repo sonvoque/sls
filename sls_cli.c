@@ -29,7 +29,7 @@ static  int     port;
 static  char    dst_ipv6addr[50];
 static  char    str_port[5];
 static  char    cmd[20];
-static  char    arg[20];
+static  char    arg[32];
 
 static  cmd_struct_t  tx_cmd, rx_reply;
 static  cmd_struct_t *cmdPtr;
@@ -67,15 +67,43 @@ void print_cmd(cmd_struct_t command) {
 }  
 
 
+/*------------------------------------------------*/
+int convert(const char *hex_str, unsigned char *byte_array, int byte_array_max) {
+    int hex_str_len = strlen(hex_str);
+    int i = 0, j = 0;
+    // The output array size is half the hex_str length (rounded up)
+    int byte_array_size = (hex_str_len+1)/2;
+    if (byte_array_size > byte_array_max) {
+        // Too big for the output array
+        return -1;
+    }
 
-int main(int argc, char* argv[])
-{
+    if (hex_str_len % 2 == 1){
+        // hex_str is an odd length, so assume an implicit "0" prefix
+        if (sscanf(&(hex_str[0]), "%1hhx", &(byte_array[0])) != 1){
+            return -1;
+        }
+        i = j = 1;
+    }
+
+    for (; i < hex_str_len; i+=2, j++){
+        if (sscanf(&(hex_str[i]), "%2hhx", &(byte_array[j])) != 1){
+            return -1;
+        }
+    }
+    return byte_array_size;
+}
+
+
+int main(int argc, char* argv[]) {
   int sock;
-  int status;
+  int status, i;
   struct addrinfo sainfo, *psinfo;
   struct sockaddr_in6 sin6;
   int sin6len;
   char buffer[MAXBUF];
+  char str_app_key[32];
+  unsigned char byte_array[16];
 
   sin6len = sizeof(struct sockaddr_in6);
 
@@ -150,6 +178,11 @@ int main(int argc, char* argv[])
     else if (strcmp(cmd,SLS_SET_APP_KEY)==0) {
       tx_cmd.cmd = CMD_SET_APP_KEY;    
       tx_cmd.type = MSG_TYPE_HELLO;
+      strcpy(str_app_key,arg);
+      convert(str_app_key, byte_array, MAX_CMD_DATA_LEN);
+      for (i = 0; i<MAX_CMD_DATA_LEN; i++) {
+        tx_cmd.arg[i] = byte_array[i];
+      }
     }
     else {
       printf("Unknown cmd \n");
