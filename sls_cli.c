@@ -124,10 +124,12 @@ int main(int argc, char* argv[])
       tx_cmd.cmd = CMD_GET_APP_KEY;    
       tx_cmd.type = MSG_TYPE_REQ;
     }
+    /*
     else if (strcmp(cmd,SLS_LED_REBOOT)==0) {
       tx_cmd.cmd = CMD_LED_REBOOT;    
       tx_cmd.type = MSG_TYPE_REQ;
-    }    
+    } 
+    */   
     else {
       printf("Unknown cmd \n");
       exit(1);
