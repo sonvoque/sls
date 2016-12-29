@@ -52,7 +52,7 @@ enum {
 SLS_CC2538DK_HW = 1 : for compiling to CC2538dk
 SLS_CC2538DK_HW = 0 : for compiling to SKY used in Cooja simulation
 */
-#define SLS_CC2538DK_HW		0
+#define SLS_CC2538DK_HW		1
 
 
 /*------------------------------------------------------------
@@ -91,6 +91,7 @@ enum {
 	CMD_SET_APP_KEY			= 0x09,
 	CMD_GET_APP_KEY			= 0x0A,
 	CMD_LED_HELLO 			= 0x0B,
+	CMD_LED_REBOOT			= 0x0C,
 };
 
 enum {
