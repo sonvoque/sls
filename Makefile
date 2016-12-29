@@ -1,13 +1,10 @@
-#CFLAGS=-g -Wall -W -I../../..
-CFLAGS=-g -Wall -W 
+CONTIKI_PROJECT = udp-echo-server
 
-sls_cli: sls_cli.o net.o noerr.o
+CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
+all: $(CONTIKI_PROJECT)
 
-#net.o: ../net.c
-net.o: net.c
-	$(COMPILE.c) $(OUTPUT_OPTION) $<
-
-#noerr.o: ../../noerr/noerr.c
-noerr.o: noerr.c
-	$(COMPILE.c) $(OUTPUT_OPTION) $<
+CONTIKI = ../../..
+CONTIKI_WITH_IPV6 = 1
+CFLAGS += -DUIP_CONF_ND6_SEND_NA=1
+include $(CONTIKI)/Makefile.include
