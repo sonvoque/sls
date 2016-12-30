@@ -16,7 +16,7 @@ author Vo Que Son <sonvq@hcmut.edu.vn>
 #include "/home/user/contiki/examples/cc2538dk/00_sls/sls.h"
 #include "sls_cli.h"
 
-#define MAXBUF 100
+#define MAXBUF  sizeof(cmd_struct_t)
 // #define MAX_LENGTH 1024
 // #define DELIMS " \t\r\n"
 
@@ -115,11 +115,11 @@ int main(int argc, char* argv[]) {
     printf("Specify an IPv6 addr or port number or Cmd \n"), exit(1);
 	}
 	else if (argc==4) {
-    sprintf(dst_ipv6addr,argv[1]);      
+    sprintf(dst_ipv6addr,"%s",argv[1]);      
     strcpy(str_port,argv[2]);
     strcpy(cmd,argv[3]);  
     port = atoi(str_port);
-    sprintf(buffer,cmd);
+    sprintf(buffer,"%s",cmd);
 
     /* REQ-TYPE*/
     if (strcmp(cmd,SLS_LED_ON)==0) {
@@ -164,10 +164,10 @@ int main(int argc, char* argv[]) {
 
   /* cmd with arg */
 	else if (argc==5) {
-    sprintf(dst_ipv6addr,argv[1]);      
+    sprintf(dst_ipv6addr,"%s",argv[1]);      
     strcpy(str_port,argv[2]);
-    sprintf(cmd,argv[3]);
-    sprintf(arg,argv[4]);
+    sprintf(cmd,"%s",argv[3]);
+    sprintf(arg,"%s",argv[4]);
 		//sprintf(buffer,argv[2]);
 
     if (strcmp(cmd,SLS_LED_DIM)==0) {
@@ -227,7 +227,7 @@ int main(int argc, char* argv[]) {
   print_cmd(tx_cmd);
 
   /*wait for a reply */
-	rev_bytes = recvfrom(sock, rev_buffer, MAXBUF, 0,(struct sockaddr *)&rev_sin6, &rev_sin6len);
+	rev_bytes = recvfrom((int)sock, rev_buffer, MAXBUF, 0,(struct sockaddr *)(&rev_sin6), (socklen_t *) &rev_sin6len);
 	if (rev_bytes<0) {
     perror("Problem in recvfrom \n");
     exit(1);
