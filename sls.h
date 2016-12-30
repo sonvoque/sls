@@ -55,6 +55,13 @@ SLS_CC2538DK_HW = 0 : for compiling to SKY used in Cooja simulation
 #define SLS_CC2538DK_HW		1
 
 
+#define	SFD 				0x7E
+
+//redefine led
+#define BLUE				LEDS_ORANGE
+#define RED					LEDS_GREEN
+#define GREEN				LEDS_BLUE
+
 /*------------------------------------------------------------
  * define UART1 *
  * UART1_RX:	PA6	RF2.5
