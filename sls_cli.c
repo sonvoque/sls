@@ -43,7 +43,7 @@ static void prepare_cmd();
 
 /*------------------------------------------------*/
 void prepare_cmd() {
-  tx_cmd.sfd = 0x7E;
+  tx_cmd.sfd = SFD;
   tx_cmd.len = sizeof(tx_cmd);
   tx_cmd.seq ++;
   //tx_cmd.type = MSG_TYPE_REQ;
