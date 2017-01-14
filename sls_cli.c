@@ -156,6 +156,10 @@ int main(int argc, char* argv[]) {
       tx_cmd.cmd = CMD_LED_REBOOT;    
       tx_cmd.type = MSG_TYPE_REQ;
     }    
+    else if (strcmp(cmd,SLS_REPAIR_ROUTE)==0) {
+      tx_cmd.cmd = CMD_REPAIR_ROUTE;    
+      tx_cmd.type = MSG_TYPE_REQ;
+    }    
     else {
       printf("Unknown cmd \n");
       exit(1);
