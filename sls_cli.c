@@ -155,8 +155,8 @@ int main(int argc, char* argv[]) {
     else if (strcmp(cmd,SLS_LED_REBOOT)==0) {
       tx_cmd.cmd = CMD_LED_REBOOT;    
       tx_cmd.type = MSG_TYPE_REQ;
-    }    
-    else if (strcmp(cmd,SLS_REPAIR_ROUTE)==0) {
+    }        
+    else if (strcmp(cmd,SLS_REPAIR_ROOT)==0) {
       tx_cmd.cmd = CMD_REPAIR_ROUTE;    
       tx_cmd.type = MSG_TYPE_REQ;
     }    

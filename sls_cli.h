@@ -45,9 +45,8 @@
 #define SLS_GET_LED_STATUS		"get_led_status"
 #define SLS_GET_GW_STATUS		"get_gw_status"
 #define SLS_GET_NW_STATUS		"get_nw_status"
+#define SLS_REPAIR_ROOT			"repair_root"
 
 #define SLS_SET_APP_KEY			"set_app_key"
 #define SLS_GET_APP_KEY			"get_app_key"
-#define SLS_REPAIR_ROUTE		"repair_route"
-
 #define SLS_APP_KEY_128 		"CAFEBEAFDEADFEEE0123456789ABCDEF"
