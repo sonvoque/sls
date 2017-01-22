@@ -12,6 +12,8 @@ author Vo Que Son <sonvq@hcmut.edu.vn>
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <sys/time.h>
+
 
 #include "/home/user/contiki/examples/cc2538dk/00_sls/sls.h"
 #include "sls_cli.h"
@@ -35,11 +37,20 @@ static  cmd_struct_t  tx_cmd, rx_reply;
 static  cmd_struct_t *cmdPtr;
 static  char *p;
 
+/* delay measurement */
+struct timeval t0;
+struct timeval t1;
+float elapsed;
 
 /*prototype definition */
 static void print_cmd();
 static void prepare_cmd();
 
+
+/*------------------------------------------------*/
+float timedifference_msec(struct timeval t0, struct timeval t1){
+    return (t1.tv_sec - t0.tv_sec) * 1000.0f + (t1.tv_usec - t0.tv_usec) / 1000.0f;
+}
 
 /*------------------------------------------------*/
 void prepare_cmd() {
@@ -225,10 +236,14 @@ int main(int argc, char* argv[]) {
   //status = sendto(sock, buffer, strlen(buffer), 0,
   //                   (struct sockaddr *)psinfo->ai_addr, sin6len);
 
+  gettimeofday(&t0, 0);
+  
   status = sendto(sock, &tx_cmd, sizeof(tx_cmd), 0,
                      (struct sockaddr *)psinfo->ai_addr, sin6len);
   printf("Send REQUEST (%d bytes) to [%s]:%s\n",status, dst_ipv6addr,str_port);
   print_cmd(tx_cmd);
+  printf(".......... done\n");
+
 
   /*wait for a reply */
 	rev_bytes = recvfrom((int)sock, rev_buffer, MAXBUF, 0,(struct sockaddr *)(&rev_sin6), (socklen_t *) &rev_sin6len);
@@ -241,7 +256,11 @@ int main(int argc, char* argv[]) {
     p = (char *) (&rev_buffer); 
     cmdPtr = (cmd_struct_t *)p;
     rx_reply = *cmdPtr;
-    print_cmd(rx_reply);      
+    print_cmd(rx_reply); 
+
+    gettimeofday(&t1, 0);
+    elapsed = timedifference_msec(t0, t1);
+    printf("Cmd execution delay %f milliseconds.\n", elapsed);
   }
 
 
