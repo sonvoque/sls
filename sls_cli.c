@@ -1,6 +1,12 @@
 /*
-Shell cmd for controlling the SLS
-author Vo Que Son <sonvq@hcmut.edu.vn>
+|-------------------------------------------------------------------|
+| HCMC University of Technology");                                  |
+| Telecommunications Departments                                    |
+| Command Line Interface (CLI) for Smart Lighting System (SLS)      |
+| Version: 1.0                                                      |
+| Author: sonvq@hcmut.edu.vn                                        |
+| Date: 01/2017                                                     |
+|-------------------------------------------------------------------|
 */
  
 #include <stdio.h>
@@ -240,7 +246,7 @@ int main(int argc, char* argv[]) {
   
   status = sendto(sock, &tx_cmd, sizeof(tx_cmd), 0,
                      (struct sockaddr *)psinfo->ai_addr, sin6len);
-  printf("Send REQUEST (%d bytes) to [%s]:%s\n",status, dst_ipv6addr,str_port);
+  printf("\nSend REQUEST (%d bytes) to [%s]:%s\n",status, dst_ipv6addr,str_port);
   print_cmd(tx_cmd);
   printf(".......... done\n");
 
@@ -260,7 +266,7 @@ int main(int argc, char* argv[]) {
 
     gettimeofday(&t1, 0);
     elapsed = timedifference_msec(t0, t1);
-    printf("Cmd execution delay %f milliseconds.\n", elapsed);
+    printf("Cmd execution delay %.2f (ms) \n\n", elapsed);
   }
 
 
