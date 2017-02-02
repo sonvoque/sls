@@ -1,6 +1,6 @@
 /*
 |-------------------------------------------------------------------|
-| HCMC University of Technology");                                  |
+| HCMC University of Technology                                     |
 | Telecommunications Departments                                    |
 | Command Line Interface (CLI) for Smart Lighting System (SLS)      |
 | Version: 1.0                                                      |
