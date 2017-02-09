@@ -1,45 +1,24 @@
 /*
- * Copyright (c) 2016, Zolertia - http://www.zolertia.com
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the Institute nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- */
-/**
- * \author Vo Que Son <sonvq@hcmut.edu.vn>
- */
+|-------------------------------------------------------------------|
+| HCMC University of Technology                                     |
+| Telecommunications Departments                                    |
+| Wireless Embedded Firmware for Smart Lighting System (SLS)        |
+| Version: 1.0                                                      |
+| Author: sonvq@hcmut.edu.vn                                        |
+| Date: 01/2017                                                     |
+|-------------------------------------------------------------------|
+*/
 
-#ifndef SLS_
-#define SLS_
+#ifndef SLS_H_
+#define SLS_H_
 
+//#define IEEE802154_CONF_PANID		0xCAFE
 #define SLS_PAN_ID	 IEEE802154_CONF_PANID
+
 
 enum {
 	SLS_NORMAL_PORT			= 3000,
-	SLS_HELLO_PORT			= 3001,
-	SLS_EMERGENCY_PORT		= 3002,
+	SLS_EMERGENCY_PORT		= 3001,
 };
 
 /*---------------------------------------------------------------------------*/
@@ -68,12 +47,6 @@ SLS_CC2538DK_HW = 0 : for compiling to SKY used in Cooja simulation
 #define BLUE		LEDS_ORANGE
 #define RED			LEDS_GREEN
 #define GREEN		LEDS_BLUE
-
-/*------------------------------------------------------------
- * define UART1 *
- * UART1_RX:	PA6	RF2.5
- * UART1_TX:	PA7	RF2.6
- *------------------------------------------------------------*/
 
 
 #define MAX_CMD_DATA_LEN	16
@@ -106,6 +79,7 @@ enum {
 	CMD_LED_HELLO 			= 0x0B,
 	CMD_LED_REBOOT			= 0x0C,
 	CMD_REPAIR_ROUTE		= 0x0D,
+	CMD_GW_HELLO			= 0x0E,
 };
 
 enum {
@@ -140,6 +114,8 @@ enum {
 	ERR_NORMAL				= 0x00,
 	ERR_UNKNOWN_CMD			= 0x01,
 	ERR_IN_HELLO_STATE		= 0x02,
+	ERR_TIME_OUT			= 0x03,
+	ERR_EMERGENCY			= 0x04,	
 };
 
 enum {
@@ -204,7 +180,7 @@ struct net_struct_t {
 //	sfd = 0x7F
 //	seq: transaction id;
 //	type: 	REQUEST/REPLY/HELLO
-//	len: 	
+//	len: 	used for App node_id
 //	cmd:	command id
 //	err_code: code returned in REPLY, sender check this field to know the REQ status
 //	arg[16]: data payload
@@ -219,11 +195,11 @@ struct cmd_struct_t {
 };
 
 
-
-
 typedef struct cmd_struct_t		cmd_struct_t;
 typedef struct net_struct_t		net_struct_t;
 typedef struct gw_struct_t		gw_struct_t;
 typedef struct led_struct_t		led_struct_t;
-/*---------------------------------------------------------------------------*/
-#endif
+
+
+
+#endif /* SLS_H_ */
