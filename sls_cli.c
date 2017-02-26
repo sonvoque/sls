@@ -200,8 +200,8 @@ int main(int argc, char* argv[]) {
       tx_cmd.cmd = CMD_SET_APP_KEY;    
       tx_cmd.type = MSG_TYPE_HELLO;
       strcpy(str_app_key,arg);
-      convert(str_app_key, byte_array, MAX_CMD_DATA_LEN);
-      for (i = 0; i<MAX_CMD_DATA_LEN; i++) {
+      convert(str_app_key, byte_array, 16);   /* 16 byte APP_KEY */
+      for (i = 0; i<16; i++) {
         tx_cmd.arg[i] = byte_array[i];
       }
     }
