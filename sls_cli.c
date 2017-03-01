@@ -213,8 +213,8 @@ int main(int argc, char* argv[]) {
     port = atoi(str_port);
    	sprintf(buffer,"%s %s",cmd,arg);
 	}	
+  
   prepare_cmd();
-
 
   strtok(buffer, "\n");
 
@@ -244,8 +244,7 @@ int main(int argc, char* argv[]) {
 
   gettimeofday(&t0, 0);
   
-  status = sendto(sock, &tx_cmd, sizeof(tx_cmd), 0,
-                     (struct sockaddr *)psinfo->ai_addr, sin6len);
+  status = sendto(sock, &tx_cmd, sizeof(tx_cmd), 0,(struct sockaddr *)psinfo->ai_addr, sin6len);
   printf("\nSend REQUEST (%d bytes) to [%s]:%s\n",status, dst_ipv6addr,str_port);
   print_cmd(tx_cmd);
   printf(".......... done\n");
