@@ -9,7 +9,6 @@
 |-------------------------------------------------------------------|
 */
 
-
 #ifndef SLS_CLI_H_
 #define SLS_CLI_H_
 
@@ -26,15 +25,13 @@
 #define SLS_LED_TIMER_STOP		"node_timer_off" 
 
 #define SLS_GET_NW_STATUS		"get_nw_status"
+#define SLS_GET_GW_STATUS		"get_gw_status"
+#define SLS_GW_HELLO 			"gw_hello"
 #define SLS_REPAIR_ROOT			"nw_repair_root"
 
 #define SLS_SET_APP_KEY			"set_app_key"
 #define SLS_GET_APP_KEY			"get_app_key"
 #define SLS_APP_KEY_128 		"CAFEBEAFDEADFEEE0123456789ABCDEF"
-
-#define SLS_GW_HELLO 			"gw_hello"
-#define SLS_GET_GW_STATUS		"get_gw_status"
-
 
 
 #endif /* SLS_CLI_H_ */

@@ -140,15 +140,15 @@ int main(int argc, char* argv[]) {
 
     /* REQ-TYPE*/
     if (strcmp(cmd,SLS_LED_ON)==0) {
-      tx_cmd.cmd = CMD_LED_ON;
+      tx_cmd.cmd = CMD_RF_LED_ON;
       tx_cmd.type = MSG_TYPE_REQ;
     }
     else if (strcmp(cmd,SLS_LED_OFF)==0) {
-      tx_cmd.cmd = CMD_LED_OFF;    
+      tx_cmd.cmd = CMD_RF_LED_OFF;    
       tx_cmd.type = MSG_TYPE_REQ;
      } 
     else if (strcmp(cmd,SLS_GET_LED_STATUS)==0) {
-      tx_cmd.cmd = CMD_GET_LED_STATUS;
+      tx_cmd.cmd = CMD_GET_RF_STATUS;
       tx_cmd.type = MSG_TYPE_REQ;
     }
     else if (strcmp(cmd,SLS_GET_NW_STATUS)==0) {
@@ -161,7 +161,7 @@ int main(int argc, char* argv[]) {
     }
     /*HELLO TYPE*/
     else if (strcmp(cmd,SLS_LED_HELLO)==0) {
-      tx_cmd.cmd = CMD_LED_HELLO;
+      tx_cmd.cmd = CMD_RF_HELLO;
       tx_cmd.type = MSG_TYPE_HELLO;
       //printf("HELLO 0x%02X\n", tx_cmd.type);
     }
@@ -170,11 +170,11 @@ int main(int argc, char* argv[]) {
       tx_cmd.type = MSG_TYPE_REQ;
     }
     else if (strcmp(cmd,SLS_LED_REBOOT)==0) {
-      tx_cmd.cmd = CMD_LED_REBOOT;    
+      tx_cmd.cmd = CMD_RF_REBOOT;    
       tx_cmd.type = MSG_TYPE_REQ;
     }        
     else if (strcmp(cmd,SLS_REPAIR_ROOT)==0) {
-      tx_cmd.cmd = CMD_REPAIR_ROUTE;    
+      tx_cmd.cmd = CMD_RF_REPAIR_ROUTE;    
       tx_cmd.type = MSG_TYPE_REQ;
     }    
     else {
@@ -192,7 +192,7 @@ int main(int argc, char* argv[]) {
 		//sprintf(buffer,argv[2]);
 
     if (strcmp(cmd,SLS_LED_DIM)==0) {
-      tx_cmd.cmd = CMD_LED_DIM;    
+      tx_cmd.cmd = CMD_RF_LED_DIM;    
       tx_cmd.arg[0] = atoi(arg);
       tx_cmd.type = MSG_TYPE_REQ;      
     }
