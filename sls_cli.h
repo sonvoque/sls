@@ -34,4 +34,14 @@
 #define SLS_APP_KEY_128 		"CAFEBEAFDEADFEEE0123456789ABCDEF"
 
 
+struct node_db_struct {
+	int			id;			/*0001xxxx xxxxxxxx */
+	char    	ipv6_addr[50];						
+	bool		connected;
+	int			rx_cmd;
+	int			tx_rep;
+	int 		num_timeout;
+	int			last_cmd;
+};
+
 #endif /* SLS_CLI_H_ */
