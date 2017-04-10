@@ -13,7 +13,6 @@
 #define SLS_CLI_H_
 
 
-
 #define SLS_LED_HELLO			"led_hello"
 #define SLS_LED_ON				"led_on"
 #define SLS_LED_OFF				"led_off"
@@ -34,14 +33,19 @@
 #define SLS_APP_KEY_128 		"CAFEBEAFDEADFEEE0123456789ABCDEF"
 
 
-struct node_db_struct {
+struct node_db_struct_t {
+	int 		index;
 	int			id;			/*0001xxxx xxxxxxxx */
 	char    	ipv6_addr[50];						
-	bool		connected;
-	int			rx_cmd;
-	int			tx_rep;
+	char		connected[1];
+	int			num_req;
+	int			num_rep;
 	int 		num_timeout;
 	int			last_cmd;
+	int 		num_of_retrans;
+	char		last_seen[50];
 };
+
+typedef struct node_db_struct_t		node_db_struct_t;
 
 #endif /* SLS_CLI_H_ */
