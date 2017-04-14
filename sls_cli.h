@@ -12,6 +12,10 @@
 #ifndef SLS_CLI_H_
 #define SLS_CLI_H_
 
+#define USING_SQL_SERVER_ENABLE	1
+#if (USING_SQL_SERVER_ENABLE)
+#define USING_SQL_SERVER
+#endif
 
 #define SLS_LED_HELLO			"led_hello"
 #define SLS_LED_ON				"led_on"
@@ -44,6 +48,12 @@ struct node_db_struct_t {
 	int			last_cmd;
 	int 		num_of_retrans;
 	char		last_seen[50];
+	char		app_key[16];
+	int 		channel_id;
+	int 		rssi;
+	int 		lqi;
+	int 		pan_id;
+	int		    tx_power;
 };
 
 typedef struct node_db_struct_t		node_db_struct_t;
