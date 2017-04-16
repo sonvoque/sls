@@ -1,6 +1,6 @@
 import socket
 import binascii
-
+import array
 
 #static  char    dst_ipv6addr_list[20][50] ={"aaaa::212:4b00:5af:8406",
 #											"aaaa::212:4b00:5af:8570",
@@ -18,6 +18,11 @@ import binascii
 #Socket to GW
 UDP_IP 		= "127.0.0.1"
 UDP_PORT 	= 21234
+
+#TCP_IP = "192.168.0.112"
+TCP_IP = "192.168.0.112"
+TCP_PORT = 21234
+
 
 #Command
 CMD_GET_RF_STATUS 		= 0xFF
@@ -60,22 +65,52 @@ err1 	= 0x00
 err0 	= 0x00
 multicast_val1 = 20
 multicast_val2 = 0
-multicast_cmd = CMD_RF_LED_OFF
-MESSAGE = bytearray([SFD,len,seq1, seq0,typ, cmd, err1,err0, multicast_cmd, multicast_val1,multicast_val2,10,11,1,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
+multicast_cmd = CMD_RF_LED_DIM
+MESSAGE = bytearray([SFD,len,seq1, seq0,typ, cmd, err1,err0, multicast_cmd, multicast_val1,multicast_val2,1,2,3,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
 
 
 #send COMMAND
-print "UDP target IP:", UDP_IP
-print "UDP target port:", UDP_PORT
-sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
-print "Send REQUEST:"
-print binascii.hexlify(MESSAGE)
+#print "UDP target IP:", UDP_IP
+#print "UDP target port:", UDP_PORT
+#sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+#sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
+#print "Send REQUEST:"
+#print binascii.hexlify(MESSAGE)
 
 #receive REPLY
 #sock.bind((UDP_IP, UDP_PORT))
-while True:
-	data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
-	print "received REPLY:"
-	print binascii.hexlify(data)
-	break
+#while True:
+#	data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+#	print "received REPLY:"
+#	print binascii.hexlify(data)
+#	break
+
+max_num = 3
+for num in range(1,max_num+1):
+	BUFFER_SIZE = 30
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect((TCP_IP, TCP_PORT))
+	print " ----------------------------------- "
+	print "Send REQUEST:", num,"[", 
+	s.send(MESSAGE)
+	print binascii.hexlify(MESSAGE),"]"
+	print "len=", hex(MESSAGE[1]),"; seq=",hex(MESSAGE[2]),hex(MESSAGE[3]),"; type=",hex(MESSAGE[4]),"; cmd=",hex(MESSAGE[5]),"; err=",hex(MESSAGE[6]),hex(MESSAGE[7])
+	print "data=[",
+	for i in range(8,28):
+		print hex(MESSAGE[i]),
+	#print binascii.hexlify(MESSAGE)
+	print "]"	
+
+	data = s.recv(BUFFER_SIZE)
+	s.close()
+	print ""
+	print "received REPLY:", "[",
+	hex_string = binascii.hexlify(data)
+	print hex_string, "]"
+	hex_data = hex_string.decode("hex")
+	reply = map(ord, hex_data)
+	print "len=",hex(reply[1]),"; seq=",hex(reply[2]), hex(reply[3]),"; type=", hex(reply[4]), "; cmd=", hex(reply[5]),"; err=",hex(reply[6]),hex(reply[7])
+	print "data=[",
+	for i in range(8,28):
+		print hex(reply[i]),
+	print "]"	
