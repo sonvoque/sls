@@ -1,6 +1,5 @@
 import socket
 import binascii
-import array
 
 #static  char    dst_ipv6addr_list[20][50] ={"aaaa::212:4b00:5af:8406",
 #											"aaaa::212:4b00:5af:8570",
@@ -20,7 +19,7 @@ UDP_IP 		= "127.0.0.1"
 UDP_PORT 	= 21234
 
 #TCP_IP = "192.168.0.112"
-TCP_IP = "192.168.0.112"
+TCP_IP = "127.0.0.1"
 TCP_PORT = 21234
 
 
@@ -39,14 +38,16 @@ CMD_RF_LED_DIM			= 0xF5
 CMD_RF_HELLO 			= 0xF4
 CMD_RF_TIMER_ON 		= 0xF3
 CMD_RF_TIMER_OFF 		= 0xF2
-CMD_SET_APP_KEY			= 0xF1
-CMD_GET_APP_KEY			= 0xF0
+CMD_RF_SET_APP_KEY		= 0xF1
+CMD_RF_GET_APP_KEY		= 0xF0
 CMD_RF_REBOOT			= 0xEF
 CMD_RF_REPAIR_ROUTE		= 0xEE
 CMD_GW_SET_TIMEOUT		= 0xED
 
 CMD_TEST_TIMEOUT		= 0xCD
 CMD_GW_MULTICAST_CMD	= 0xEC
+CMD_GW_BROADCAST_CMD	= 0xEB
+CMD_GW_GET_EMER_INFO	= 0xEA
 
 #msg type
 MSG_TYPE_REQ			= 0x01
@@ -56,17 +57,24 @@ MSG_TYPE_HELLO			= 0x03
 
 #make frame
 SFD 	= 0x7F
-len 	= 3		# node ID
+len 	= 10		# node ID
 seq1 	= 0x01
 seq0 	= 0x00
 typ 	= MSG_TYPE_REQ
-cmd 	= CMD_GW_MULTICAST_CMD
+cmd 	= CMD_GW_GET_EMER_INFO
 err1 	= 0x00
 err0 	= 0x00
 multicast_val1 = 20
 multicast_val2 = 0
+multicast_val3 = 0
+multicast_val4 = 0
+multicast_val5 = 0
+multicast_val6 = 0
+
 multicast_cmd = CMD_RF_LED_DIM
-MESSAGE = bytearray([SFD,len,seq1, seq0,typ, cmd, err1,err0, multicast_cmd, multicast_val1,multicast_val2,1,2,3,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
+MESSAGE = bytearray([SFD,len,seq1, seq0,typ, cmd, err1,err0, \
+	multicast_cmd, multicast_val1,multicast_val2,multicast_val3,multicast_val4,multicast_val5,multicast_val6,\
+	10,11,1,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
 
 
 #send COMMAND
@@ -85,32 +93,28 @@ MESSAGE = bytearray([SFD,len,seq1, seq0,typ, cmd, err1,err0, multicast_cmd, mult
 #	print binascii.hexlify(data)
 #	break
 
-max_num = 3
+max_num = 1
 for num in range(1,max_num+1):
 	BUFFER_SIZE = 30
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((TCP_IP, TCP_PORT))
-	print " ----------------------------------- "
-	print "Send REQUEST:", num,"[", 
-	s.send(MESSAGE)
-	print binascii.hexlify(MESSAGE),"]"
-	print "len=", hex(MESSAGE[1]),"; seq=",hex(MESSAGE[2]),hex(MESSAGE[3]),"; type=",hex(MESSAGE[4]),"; cmd=",hex(MESSAGE[5]),"; err=",hex(MESSAGE[6]),hex(MESSAGE[7])
-	print "data=[",
+	print("-----------------------------------")
+	print("Send REQUEST:", num,": ", binascii.hexlify(MESSAGE)) 
+	print("len=", hex(MESSAGE[1]),"; seq=",hex(MESSAGE[2]),hex(MESSAGE[3]),"; type=",hex(MESSAGE[4]),"; cmd=",hex(MESSAGE[5]),"; err=",hex(MESSAGE[6]),hex(MESSAGE[7]))
+	print("data=[",end='')
 	for i in range(8,28):
-		print hex(MESSAGE[i]),
-	#print binascii.hexlify(MESSAGE)
-	print "]"	
+		print(hex(MESSAGE[i]),",",end='')
+	print("]")	
+	s.send(MESSAGE)
 
 	data = s.recv(BUFFER_SIZE)
 	s.close()
-	print ""
-	print "received REPLY:", "[",
-	hex_string = binascii.hexlify(data)
-	print hex_string, "]"
-	hex_data = hex_string.decode("hex")
-	reply = map(ord, hex_data)
-	print "len=",hex(reply[1]),"; seq=",hex(reply[2]), hex(reply[3]),"; type=", hex(reply[4]), "; cmd=", hex(reply[5]),"; err=",hex(reply[6]),hex(reply[7])
-	print "data=[",
+	print("")
+	print("received REPLY:", binascii.hexlify(data))
+	reply = list(data)
+	print("len=",hex(reply[1]),"; seq=",hex(reply[2]), hex(reply[3]),"; type=", hex(reply[4]), "; cmd=", hex(reply[5]),"; err=",hex(reply[6]),hex(reply[7]))
+	print("data=[",end='')
 	for i in range(8,28):
-		print hex(reply[i]),
-	print "]"	
+		print(hex(reply[i]),",",end='')
+	print("]")	
+	print("")
