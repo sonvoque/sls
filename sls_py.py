@@ -72,9 +72,9 @@ MSG_TYPE_HELLO			= 0x03
 
 #make frame
 SFD 	= 0x7F
-len 	= 3			# node ID or IDs of multicast group
-seq1 	= 0x00
-seq0 	= 0x01
+len 	= 1			# node ID or IDs of multicast group
+seq1 	= 0x01
+seq0 	= 0x00
 typ 	= MSG_TYPE_REQ
 cmd 	= CMD_GW_MULTICAST_CMD
 err1 	= 0x00
