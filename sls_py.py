@@ -73,16 +73,16 @@ MSG_TYPE_HELLO			= 0x03
 #make frame
 SFD 	= 0x7F
 len 	= 1			# node ID or IDs of multicast group
-seq1 	= 0x01
-seq0 	= 0x00
+seq1 	= 0x00
+seq0 	= 0x01
 typ 	= MSG_TYPE_REQ
-cmd 	= CMD_GW_MULTICAST_CMD
+cmd 	= CMD_GW_BROADCAST_CMD    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
 err1 	= 0x00
 err0 	= 0x00
 
 
 #define command executed on each node here
-multicast_cmd = CMD_RF_LED_DIM
+multicast_cmd = CMD_RF_LED_DIM 			#CMD_RF_LED_DIM
 
 multicast_val1 = 20
 multicast_val2 = 0
@@ -103,7 +103,7 @@ MESSAGE = bytearray([SFD,len,seq1, seq0,typ, cmd, err1,err0, \
 	multicast_val7, multicast_val8, multicast_val9, multicast_val10,\
 
 	#addresses of multi-cast nodes
-	9,10,11,0x00,0x00,0x00,0x00,0x00,0x00,\
+	25,9,10,0x00,0x00,0x00,0x00,0x00,0x00,\
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
@@ -160,7 +160,7 @@ for num in range(1,max_num+1):
 	print binascii.hexlify(data) 
 	reply = map(ord, data)
 	#reply = list(data)
-	print "len=", hex(reply[1]),"; seq=", hex(reply[2]), hex(reply[3]),"; type=", hex(reply[4]), "; cmd=", hex(reply[5]),"; err=",hex(reply[6]),hex(reply[7])
+	print "len=", hex(reply[1]),"; seq=", hex(reply[2]), hex(reply[3]),"; type=", hex(reply[4]), "; cmd=", hex(reply[5]),"; err=",hex(reply[7]),hex(reply[6])
 	print "data=[",
 	for i in range(8,MAX_CMD_LEN):
 		print hex(reply[i]),
