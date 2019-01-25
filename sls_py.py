@@ -68,46 +68,7 @@ CMD_GW_RELOAD_FW		= 0xE3
 MSG_TYPE_REQ			= 0x01
 MSG_TYPE_REP			= 0x02
 MSG_TYPE_HELLO			= 0x03
-
-
-#make frame
-SFD 	= 0x7F
-len 	= 1			# node ID or IDs of multicast group
-seq1 	= 0x00
-seq0 	= 0x01
-typ 	= MSG_TYPE_REQ
-cmd 	= CMD_GW_BROADCAST_CMD    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
-err1 	= 0x00
-err0 	= 0x00
-
-
-#define command executed on each node here
-multicast_cmd = CMD_RF_LED_DIM 			#CMD_RF_LED_DIM
-
-multicast_val1 = 20
-multicast_val2 = 0
-multicast_val3 = 0
-multicast_val4 = 0
-multicast_val5 = 0
-multicast_val6 = 0
-multicast_val7 = 0
-multicast_val8 = 0
-multicast_val9 = 0
-multicast_val10 = 0
-
-
-#64 bytes command
-MESSAGE = bytearray([SFD,len,seq1, seq0,typ, cmd, err1,err0, \
-	multicast_cmd, \
-	multicast_val1, multicast_val2, multicast_val3, multicast_val4, multicast_val5, multicast_val6,\
-	multicast_val7, multicast_val8, multicast_val9, multicast_val10,\
-
-	#addresses of multi-cast nodes
-	25,9,10,0x00,0x00,0x00,0x00,0x00,0x00,\
-	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
-	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
-	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
-	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
+MSG_TYPE_ASYNC			= 0x04
 
 
 #send COMMAND
@@ -129,8 +90,54 @@ MESSAGE = bytearray([SFD,len,seq1, seq0,typ, cmd, err1,err0, \
 host_name = socket.gethostname() 
 host_ip = socket.gethostbyname(host_name) 
 
-max_num = 1
+num_of_req_sent = 0
+num_of_ack_rev  = 0
+num_of_timout   = 0
+total_delay 	= 0
+
+
+max_num = 10
 for num in range(1,max_num+1):
+	#make frame
+	SFD 	= 0x7F
+	len 	= 1			# node ID or IDs of multicast group
+	seq1 	= 0x00
+	seq0 	= num
+	typ 	= MSG_TYPE_REQ
+	cmd 	= CMD_GW_BROADCAST_CMD    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
+	err1 	= 0x00
+	err0 	= 0x00
+
+
+	#define command executed on each node here
+	multicast_cmd = CMD_RF_LED_DIM 			#CMD_RF_LED_DIM
+
+	multicast_val1 = 20
+	multicast_val2 = 0
+	multicast_val3 = 0
+	multicast_val4 = 0
+	multicast_val5 = 0
+	multicast_val6 = 0
+	multicast_val7 = 0
+	multicast_val8 = 0
+	multicast_val9 = 0
+	multicast_val10 = 0
+
+
+	#64 bytes command
+	MESSAGE = bytearray([SFD,len,seq1, seq0,typ, cmd, err1,err0, \
+		multicast_cmd, \
+		multicast_val1, multicast_val2, multicast_val3, multicast_val4, multicast_val5, multicast_val6,\
+		multicast_val7, multicast_val8, multicast_val9, multicast_val10,\
+
+		#addresses of multi-cast nodes
+		25,9,10,0x00,0x00,0x00,0x00,0x00,0x00,\
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
+		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00])
+
+
 	BUFFER_SIZE = MAX_CMD_LEN
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((TCP_IP, TCP_PORT))	
@@ -140,7 +147,7 @@ for num in range(1,max_num+1):
 	print "Connect to 6LoWPAN-GW IP = ",TCP_IP,",port: ", TCP_PORT
 	print "--------------------------------------------------------"
 	print "Time: ", datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-	print "Send REQUEST:", num,": ", BUFFER_SIZE, " bytes"
+	print "Send REQUEST:", num," ",BUFFER_SIZE,"bytes"
 	print binascii.hexlify(MESSAGE) 
 	print "len=", hex(MESSAGE[1]),"; seq=",hex(MESSAGE[2]),hex(MESSAGE[3]),"; type=",hex(MESSAGE[4]),"; cmd=",hex(MESSAGE[5]),"; err=",hex(MESSAGE[6]),hex(MESSAGE[7])
 	print "data=[",
@@ -157,6 +164,8 @@ for num in range(1,max_num+1):
 	print "--------------------------------------------------------"
 	print "Time: ",datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 	print "Received REPLY: ",BUFFER_SIZE, " bytes"
+
+
 	print binascii.hexlify(data) 
 	reply = map(ord, data)
 	#reply = list(data)
@@ -167,3 +176,16 @@ for num in range(1,max_num+1):
 	print "]"
 	print ""	
 	print "Delay time = ",new_millis-old_millis,"ms"
+
+	total_delay = total_delay + (new_millis-old_millis)
+
+	num_of_req_sent = num_of_req_sent + int(hex(reply[8]),0)
+	num_of_ack_rev  = num_of_ack_rev + int(hex(reply[9]),0)
+	num_of_timout   = num_of_timout + int(hex(reply[10]),0)
+
+print ""
+print "-------------SUMMARY-------------------------------------------"
+print "Num of request sent/received/time_out = ",num_of_req_sent,"/",num_of_ack_rev,"/",num_of_timout
+print "Success rate (%) = ", float(num_of_ack_rev)*100/float(num_of_req_sent)
+print "Average delay per request (ms) = ", total_delay/num_of_req_sent
+print "---------------------------------------------------------------"
