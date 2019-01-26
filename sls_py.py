@@ -25,8 +25,8 @@ from datetime import datetime
 UDP_IP 		= "127.0.0.1"
 UDP_PORT 	= 21234
 
-#TCP_IP = "192.168.144.150"
-TCP_IP = "127.0.0.1"
+TCP_IP = "192.168.144.150"
+#TCP_IP = "127.0.0.1"
 TCP_PORT = 21234
 
 MAX_CMD_LEN	= 64	
@@ -71,6 +71,18 @@ MSG_TYPE_HELLO			= 0x03
 MSG_TYPE_ASYNC			= 0x04
 
 
+# for LED-driver */
+CMD_LED_PING			= 0x01
+CMD_LED_SET_RTC			= 0x02
+CMD_LED_RTC 			= 0x03
+CMD_LED_MODE			= 0x04
+CMD_LED_GET_STATUS      = 0x15
+CMD_LED_EMERGENCY		= 0x06
+CMD_LED_DIM				= 0x08
+CMD_LED_SET_ID			= 0x0E
+CMD_LED_GET_ID			= 0x0F
+
+
 #send COMMAND
 #print "UDP target IP:", UDP_IP
 #print "UDP target port:", UDP_PORT
@@ -90,6 +102,9 @@ MSG_TYPE_ASYNC			= 0x04
 host_name = socket.gethostname() 
 host_ip = socket.gethostbyname(host_name) 
 
+num_of_pkt_sent = 0
+num_of_pkt_rev  = 0;
+
 num_of_req_sent = 0
 num_of_ack_rev  = 0
 num_of_timout   = 0
@@ -104,7 +119,10 @@ for num in range(1,max_num+1):
 	seq1 	= 0x00
 	seq0 	= num
 	typ 	= MSG_TYPE_REQ
-	cmd 	= CMD_GW_BROADCAST_CMD    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
+	if ((num % 2)==0):
+		cmd 	= CMD_RF_LED_ON    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
+	if ((num % 2)==1):
+		cmd 	= CMD_RF_LED_OFF    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
 	err1 	= 0x00
 	err0 	= 0x00
 
@@ -155,6 +173,7 @@ for num in range(1,max_num+1):
 		print hex(MESSAGE[i]),
 	print "]"
 	s.send(MESSAGE)
+	num_of_pkt_sent = num_of_pkt_sent +1
 
 	
 	data = s.recv(BUFFER_SIZE)
@@ -164,7 +183,7 @@ for num in range(1,max_num+1):
 	print "--------------------------------------------------------"
 	print "Time: ",datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 	print "Received REPLY: ",BUFFER_SIZE, " bytes"
-
+	num_of_pkt_rev = num_of_pkt_rev + 1
 
 	print binascii.hexlify(data) 
 	reply = map(ord, data)
@@ -183,9 +202,16 @@ for num in range(1,max_num+1):
 	num_of_ack_rev  = num_of_ack_rev + int(hex(reply[9]),0)
 	num_of_timout   = num_of_timout + int(hex(reply[10]),0)
 
-print ""
+if (cmd==CMD_GW_BROADCAST_CMD) or (cmd == CMD_GW_MULTICAST_CMD):
+	print "-------------SUMMARY BROADCAST/MULTICAST command---------------"
+	print "Num of iteration = ", num
+	print "Num of request sent/received/time_out = ",num_of_req_sent,"/",num_of_ack_rev,"/",num_of_timout
+	print "Success rate (%) = ", float(num_of_ack_rev)*100/float(num_of_req_sent)
+	print "Average delay per request (ms) = ", total_delay/num_of_req_sent
+	print "---------------------------------------------------------------"
+
 print "-------------SUMMARY-------------------------------------------"
-print "Num of request sent/received/time_out = ",num_of_req_sent,"/",num_of_ack_rev,"/",num_of_timout
-print "Success rate (%) = ", float(num_of_ack_rev)*100/float(num_of_req_sent)
-print "Average delay per request (ms) = ", total_delay/num_of_req_sent
-print "---------------------------------------------------------------"
+print "Num of iteration = ", num
+print "Num of packet sent/received = ",num_of_pkt_sent,"/",num_of_pkt_rev
+print "Success rate (%) = ", float(num_of_pkt_rev)*100/float(num_of_pkt_sent)
+print "Average delay per pkt (ms) = ", total_delay/num_of_pkt_sent
