@@ -1,3 +1,22 @@
+#|-------------------------------------------------------------------|
+#| HCMC University of Technology                                     |
+#| Telecommunications Departments                                    |
+#| Wireless Embedded Firmware for Smart Lighting System (SLS)        |
+#| Version: 1.0                                                      |
+#| Author: sonvq@hcmut.edu.vn                                        |
+#| Date: 01/2017                                                     |
+#| - Client sw to control SLS via gateway                            |
+#|-------------------------------------------------------------------|
+#    
+# Topology description:
+#
+#		|----------|     IPv6     |-----------|		 IPv4		|----------|
+#		| 6LoWPAN  | ------------ |  Gateway  | --------------- | Client   |   
+#		| network  |   wireless	  | + BR + DB |  wire/wireless  | software |
+#		|----------|              |-----------|					|----------|
+#
+
+
 import socket
 import binascii
 import sys
@@ -5,13 +24,10 @@ import socket
 import time
 from datetime import datetime
 
-
-#from __future__ import print_function
-
 #static  char    dst_ipv6addr_list[20][50] ={"aaaa::212:4b00:5af:8406",
 #											"aaaa::212:4b00:5af:8570",
 #                                           "aaaa::212:4b00:5a9:8f83",
-#                                          	"aaaa::212:4b00:5a9:8fd5",                                              
+#                                           "aaaa::212:4b00:5a9:8fd5",                                     
 #			   								"aaaa::212:4b00:5af:83f8",
 #											"aaaa::212:4b00:5af:851f",
 #											"aaaa::212:4b00:5af:8422",
@@ -25,8 +41,9 @@ from datetime import datetime
 UDP_IP 		= "127.0.0.1"
 UDP_PORT 	= 21234
 
-TCP_IP = "192.168.144.150"
-#TCP_IP = "127.0.0.1"
+# IP of Gateway
+#TCP_IP = "192.168.144.150"
+TCP_IP = "127.0.0.1"
 TCP_PORT = 21234
 
 MAX_CMD_LEN	= 64	
@@ -111,7 +128,7 @@ num_of_timout   = 0
 total_delay 	= 0
 
 
-max_num = 10
+max_num = 1
 for num in range(1,max_num+1):
 	#make frame
 	SFD 	= 0x7F
@@ -119,10 +136,7 @@ for num in range(1,max_num+1):
 	seq1 	= 0x00
 	seq0 	= num
 	typ 	= MSG_TYPE_REQ
-	if ((num % 2)==0):
-		cmd 	= CMD_RF_LED_ON    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
-	if ((num % 2)==1):
-		cmd 	= CMD_RF_LED_OFF    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
+	cmd 	= CMD_GW_BROADCAST_CMD	#CMD_RF_LED_OFF    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
 	err1 	= 0x00
 	err0 	= 0x00
 
@@ -145,11 +159,11 @@ for num in range(1,max_num+1):
 	#64 bytes command
 	MESSAGE = bytearray([SFD,len,seq1, seq0,typ, cmd, err1,err0, \
 		multicast_cmd, \
-		multicast_val1, multicast_val2, multicast_val3, multicast_val4, multicast_val5, multicast_val6,\
-		multicast_val7, multicast_val8, multicast_val9, multicast_val10,\
+		multicast_val1, multicast_val2, multicast_val3, multicast_val4, multicast_val5, \
+		multicast_val6,multicast_val7, multicast_val8, multicast_val9, multicast_val10,\
 
 		#addresses of multi-cast nodes
-		25,9,10,0x00,0x00,0x00,0x00,0x00,0x00,\
+		2,3,4,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
@@ -202,16 +216,14 @@ for num in range(1,max_num+1):
 	num_of_ack_rev  = num_of_ack_rev + int(hex(reply[9]),0)
 	num_of_timout   = num_of_timout + int(hex(reply[10]),0)
 
-if (cmd==CMD_GW_BROADCAST_CMD) or (cmd == CMD_GW_MULTICAST_CMD):
-	print "-------------SUMMARY BROADCAST/MULTICAST command---------------"
-	print "Num of iteration = ", num
-	print "Num of request sent/received/time_out = ",num_of_req_sent,"/",num_of_ack_rev,"/",num_of_timout
-	print "Success rate (%) = ", float(num_of_ack_rev)*100/float(num_of_req_sent)
-	print "Average delay per request (ms) = ", total_delay/num_of_req_sent
-	print "---------------------------------------------------------------"
-
 print "-------------SUMMARY-------------------------------------------"
 print "Num of iteration = ", num
 print "Num of packet sent/received = ",num_of_pkt_sent,"/",num_of_pkt_rev
 print "Success rate (%) = ", float(num_of_pkt_rev)*100/float(num_of_pkt_sent)
 print "Average delay per pkt (ms) = ", total_delay/num_of_pkt_sent
+
+if (cmd==CMD_GW_BROADCAST_CMD) or (cmd == CMD_GW_MULTICAST_CMD):
+	print "-------------SUMMARY BROADCAST/MULTICAST GW command------------"
+	print "Num of request sent/received/time_out = ",num_of_req_sent,"/",num_of_ack_rev,"/",num_of_timout
+	print "Success rate (%) = ", float(num_of_ack_rev)*100/float(num_of_req_sent)
+	print "---------------------------------------------------------------"
