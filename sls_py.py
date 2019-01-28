@@ -216,7 +216,8 @@ for num in range(1,max_num+1):
 	num_of_ack_rev  = num_of_ack_rev + int(hex(reply[9]),0)
 	num_of_timout   = num_of_timout + int(hex(reply[10]),0)
 
-print "-------------SUMMARY-------------------------------------------"
+print ""
+print "-----------------SUMMARY---------------------------------------"
 print "Num of iteration = ", num
 print "Num of packet sent/received = ",num_of_pkt_sent,"/",num_of_pkt_rev
 print "Success rate (%) = ", float(num_of_pkt_rev)*100/float(num_of_pkt_sent)
