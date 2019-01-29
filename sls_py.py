@@ -136,7 +136,8 @@ for num in range(1,max_num+1):
 	seq1 	= 0x00
 	seq0 	= num
 	typ 	= MSG_TYPE_REQ
-	cmd 	= CMD_GW_BROADCAST_CMD	#CMD_RF_LED_OFF    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
+	#cmd 	= CMD_RF_LED_OFF				#CMD_RF_LED_OFF    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
+	cmd = 0xF6 + (num % 2)
 	err1 	= 0x00
 	err0 	= 0x00
 
@@ -224,6 +225,7 @@ print "Success rate (%) = ", float(num_of_pkt_rev)*100/float(num_of_pkt_sent)
 print "Average delay per pkt (ms) = ", total_delay/num_of_pkt_sent
 
 if (cmd==CMD_GW_BROADCAST_CMD) or (cmd == CMD_GW_MULTICAST_CMD):
+	print ""
 	print "-------------SUMMARY BROADCAST/MULTICAST GW command------------"
 	print "Num of request sent/received/time_out = ",num_of_req_sent,"/",num_of_ack_rev,"/",num_of_timout
 	print "Success rate (%) = ", float(num_of_ack_rev)*100/float(num_of_req_sent)
