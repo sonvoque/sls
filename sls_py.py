@@ -136,8 +136,8 @@ for num in range(1,max_num+1):
 	seq1 	= 0x00
 	seq0 	= num
 	typ 	= MSG_TYPE_REQ
-	#cmd 	= CMD_RF_LED_OFF				#CMD_RF_LED_OFF    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
-	cmd = 0xF6 + (num % 2)
+	cmd 	= CMD_GW_BROADCAST_CMD				#CMD_RF_LED_OFF    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
+	#cmd = 0xF6 + (num % 2)
 	err1 	= 0x00
 	err0 	= 0x00
 
@@ -164,7 +164,7 @@ for num in range(1,max_num+1):
 		multicast_val6,multicast_val7, multicast_val8, multicast_val9, multicast_val10,\
 
 		#addresses of multi-cast nodes
-		2,3,4,0x00,0x00,0x00,0x00,0x00,0x00,\
+		1,3,4,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
@@ -177,7 +177,7 @@ for num in range(1,max_num+1):
 	old_millis = int(round(time.time() * 1000))
 	print "--------------------------------------------------------"
 	print "Client IP = ", host_ip
-	print "Connect to 6LoWPAN-GW IP = ",TCP_IP,",port: ", TCP_PORT
+	print "Connect to 6LoWPAN-GW IP = ",TCP_IP,", port: ", TCP_PORT
 	print "--------------------------------------------------------"
 	print "Time: ", datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 	print "Send REQUEST:", num," ",BUFFER_SIZE,"bytes"
