@@ -2,9 +2,9 @@
 #| HCMC University of Technology                                     |
 #| Telecommunications Departments                                    |
 #| Wireless Embedded Firmware for Smart Lighting System (SLS)        |
-#| Version: 1.0                                                      |
+#| Version: 2.0                                                      |
 #| Author: sonvq@hcmut.edu.vn                                        |
-#| Date: 01/2017                                                     |
+#| Date: 01/2019                                                     |
 #| - Client sw to control SLS via gateway                            |
 #|-------------------------------------------------------------------|
 #    
@@ -164,7 +164,7 @@ for num in range(1,max_num+1):
 		multicast_val6,multicast_val7, multicast_val8, multicast_val9, multicast_val10,\
 
 		#addresses of multi-cast nodes
-		1,3,4,0x00,0x00,0x00,0x00,0x00,0x00,\
+		4,3,4,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
