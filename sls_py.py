@@ -36,6 +36,10 @@ from datetime import datetime
 #                                            "aaaa::212:4b00:5a9:8f91", 
 #                                                                    };
 
+GREEN = '\033[1;32m'
+PINK  = '\033[1;35m'
+RESET = '\033[0m'
+
 
 #Socket to GW
 UDP_IP 		= "127.0.0.1"
@@ -127,8 +131,19 @@ num_of_ack_rev  = 0
 num_of_timout   = 0
 total_delay 	= 0
 
+print "\033[H\033[J"
+print "Network topology"
+print ""
+print "		|----------|    IPv6    |-----------|      IPv4       "+PINK+"|----------|"+RESET
+print "		| 6LoWPAN  |<---------->|  Gateway  |<--------------->"+PINK+"| Client   |"+RESET
+print "		| network  |  wireless  | + BR + DB |  wire/wireless  "+PINK+"| software |"+RESET
+print "		|----------|            |-----------|                 "+PINK+"|----------|"+RESET
+print ""
 
+#define number of iterations
 max_num = 1
+
+#loop of processing
 for num in range(1,max_num+1):
 	#make frame
 	SFD 	= 0x7F
@@ -157,14 +172,14 @@ for num in range(1,max_num+1):
 	multicast_val10 = 0
 
 
-	#64 bytes command
+	#concat 64 bytes to a command
 	MESSAGE = bytearray([SFD,len,seq1, seq0,typ, cmd, err1,err0, \
 		multicast_cmd, \
 		multicast_val1, multicast_val2, multicast_val3, multicast_val4, multicast_val5, \
 		multicast_val6,multicast_val7, multicast_val8, multicast_val9, multicast_val10,\
 
 		#addresses of multi-cast nodes
-		4,3,4,0x00,0x00,0x00,0x00,0x00,0x00,\
+		26,3,4,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
@@ -177,15 +192,16 @@ for num in range(1,max_num+1):
 	old_millis = int(round(time.time() * 1000))
 	print "--------------------------------------------------------"
 	print "Client IP = ", host_ip
-	print "Connect to 6LoWPAN-GW IP = ",TCP_IP,", port: ", TCP_PORT
+	print "Connect to 6LoWPAN-GW IP = " + GREEN, TCP_IP, RESET+", port: "+GREEN, TCP_PORT, ""+RESET
 	print "--------------------------------------------------------"
 	print "Time: ", datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-	print "Send REQUEST:", num," ",BUFFER_SIZE,"bytes"
-	print binascii.hexlify(MESSAGE) 
+	print "Send REQUEST:" + PINK, num, RESET +" ",BUFFER_SIZE,"bytes"
+	#print binascii.hexlify(MESSAGE) 
 	print "len=", hex(MESSAGE[1]),"; seq=",hex(MESSAGE[2]),hex(MESSAGE[3]),"; type=",hex(MESSAGE[4]),"; cmd=",hex(MESSAGE[5]),"; err=",hex(MESSAGE[6]),hex(MESSAGE[7])
 	print "data=[",
 	for i in range(8,MAX_CMD_LEN):
-		print hex(MESSAGE[i]),
+		#print hex(MESSAGE[i]),
+		print MESSAGE[i],
 	print "]"
 	s.send(MESSAGE)
 	num_of_pkt_sent = num_of_pkt_sent +1
@@ -200,33 +216,34 @@ for num in range(1,max_num+1):
 	print "Received REPLY: ",BUFFER_SIZE, " bytes"
 	num_of_pkt_rev = num_of_pkt_rev + 1
 
-	print binascii.hexlify(data) 
+	#print binascii.hexlify(data) 
 	reply = map(ord, data)
 	#reply = list(data)
 	print "len=", hex(reply[1]),"; seq=", hex(reply[2]), hex(reply[3]),"; type=", hex(reply[4]), "; cmd=", hex(reply[5]),"; err=",hex(reply[7]),hex(reply[6])
 	print "data=[",
 	for i in range(8,MAX_CMD_LEN):
-		print hex(reply[i]),
+		#print hex(reply[i]),
+		print reply[i],
 	print "]"
 	print ""	
-	print "Delay time = ",new_millis-old_millis,"ms"
+	print "Delay time = " + GREEN,new_millis-old_millis,RESET + "ms"
 
 	total_delay = total_delay + (new_millis-old_millis)
 
 	num_of_req_sent = num_of_req_sent + int(hex(reply[8]),0)
-	num_of_ack_rev  = num_of_ack_rev + int(hex(reply[9]),0)
-	num_of_timout   = num_of_timout + int(hex(reply[10]),0)
+	num_of_ack_rev  = num_of_ack_rev  + int(hex(reply[9]),0)
+	num_of_timout   = num_of_timout   + int(hex(reply[10]),0)
 
 print ""
 print "-----------------SUMMARY---------------------------------------"
-print "Num of iteration = ", num
-print "Num of packet sent/received = ",num_of_pkt_sent,"/",num_of_pkt_rev
-print "Success rate (%) = ", float(num_of_pkt_rev)*100/float(num_of_pkt_sent)
+print "Num of iteration = " + GREEN, num, RESET + ""
+print "Num of packet sent/received = " + GREEN, num_of_pkt_sent, "/",num_of_pkt_rev, RESET + ""
+print "Success rate (%) = " + GREEN, float(num_of_pkt_rev)*100/float(num_of_pkt_sent), RESET + ""
 print "Average delay per pkt (ms) = ", total_delay/num_of_pkt_sent
 
 if (cmd==CMD_GW_BROADCAST_CMD) or (cmd == CMD_GW_MULTICAST_CMD):
 	print ""
 	print "-------------SUMMARY BROADCAST/MULTICAST GW command------------"
-	print "Num of request sent/received/time_out = ",num_of_req_sent,"/",num_of_ack_rev,"/",num_of_timout
-	print "Success rate (%) = ", float(num_of_ack_rev)*100/float(num_of_req_sent)
+	print "Num of request sent/received/time_out = " + GREEN ,num_of_req_sent,RESET + "/" + GREEN ,num_of_ack_rev, RESET + "/" + GREEN, num_of_timout, RESET + ""
+	print "Success rate (%) = " + GREEN, float(num_of_ack_rev)*100/float(num_of_req_sent), RESET + ""
 	print "---------------------------------------------------------------"
