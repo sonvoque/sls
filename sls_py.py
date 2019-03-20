@@ -92,7 +92,7 @@ MSG_TYPE_HELLO			= 0x03
 MSG_TYPE_ASYNC			= 0x04
 
 
-# for LED-driver */
+# for LED-driver
 CMD_LED_PING			= 0x01
 CMD_LED_SET_RTC			= 0x02
 CMD_LED_RTC 			= 0x03
@@ -147,7 +147,7 @@ max_num = 1
 for num in range(1,max_num+1):
 	#make frame
 	SFD 	= 0x7F
-	len 	= 1			# node ID or IDs of multicast group
+	len 	= 2			# node ID or IDs of multicast group
 	seq1 	= 0x00
 	seq0 	= num
 	typ 	= MSG_TYPE_REQ
