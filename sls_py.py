@@ -141,17 +141,17 @@ print "		|----------|            |-----------|                 "+PINK+"|--------
 print ""
 
 #define number of iterations
-max_num = 1
+max_num = 10
 
 #loop of processing
 for num in range(1,max_num+1):
 	#make frame
 	SFD 	= 0x7F
-	len 	= 2			# node ID or IDs of multicast group
+	len 	= 4			# node ID or IDs of multicast group
 	seq1 	= 0x00
 	seq0 	= num
 	typ 	= MSG_TYPE_REQ
-	cmd 	= CMD_GW_BROADCAST_CMD				#CMD_RF_LED_OFF    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
+	cmd 	= CMD_RF_LED_DIM				#CMD_RF_LED_OFF    #CMD_GW_BROADCAST_CMD #CMD_GW_MULTICAST_CMD
 	#cmd = 0xF6 + (num % 2)
 	err1 	= 0x00
 	err0 	= 0x00
@@ -160,7 +160,7 @@ for num in range(1,max_num+1):
 	#define command executed on each node here
 	multicast_cmd = CMD_RF_LED_DIM 			#CMD_RF_LED_DIM
 
-	multicast_val1 = 20
+	multicast_val1 = 2
 	multicast_val2 = 0
 	multicast_val3 = 0
 	multicast_val4 = 0
@@ -169,7 +169,7 @@ for num in range(1,max_num+1):
 	multicast_val7 = 0
 	multicast_val8 = 0
 	multicast_val9 = 0
-	multicast_val10 = 0
+	multicast_val10= 0
 
 
 	#concat 64 bytes to a command
@@ -179,7 +179,7 @@ for num in range(1,max_num+1):
 		multicast_val6,multicast_val7, multicast_val8, multicast_val9, multicast_val10,\
 
 		#addresses of multi-cast nodes
-		26,3,4,0x00,0x00,0x00,0x00,0x00,0x00,\
+		2,3,4,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
 		0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,\
